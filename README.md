@@ -20,3 +20,17 @@ app.py
 
 uvicorn main:app --host 0.0.0.0 --port 8000
 ngrok http 8000
+
+{
+  "email": "admin@unmsm.edu",
+  "password": "1234",
+  "full_name": "Administrador",
+  "role": "admin"
+}
+
+{
+  "email": "user@example.com",
+  "password": "string",
+  "full_name": "string",
+  "role": "person"
+}

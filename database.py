@@ -16,6 +16,8 @@ if DATABASE_URL.startswith("sqlite"):
 engine = create_engine(DATABASE_URL, echo=False, connect_args=connect_args)
 
 def create_db_and_tables():
+    import models.user
+    import models.extra  
     SQLModel.metadata.create_all(engine)
 
 def get_session():

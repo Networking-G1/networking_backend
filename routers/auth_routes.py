@@ -4,7 +4,7 @@ from sqlmodel import Session
 from database import get_session
 from crud import authenticate_user
 from auth import create_access_token
-from schemas import Token
+from schemas.schemas import Token
 from typing import Dict
 
 router = APIRouter()

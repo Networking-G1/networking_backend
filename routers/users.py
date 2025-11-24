@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 from typing import Any
 from database import get_session
-from schemas import UserCreate, UserRead
+from schemas.schemas import UserCreate, UserRead
 from crud import create_user, get_user_by_email, set_password
 from deps import get_current_user
 from auth import create_access_token, decode_token
