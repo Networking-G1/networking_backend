@@ -59,3 +59,28 @@ def reset_password(payload: dict, session: Session = Depends(get_session)):
 @router.get("/me", response_model=UserRead)
 def read_me(current_user = Depends(get_current_user)):
     return current_user
+
+@router.get("/people")
+def list_people_users(
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+):
+    query = (
+        select(User)
+        .where(User.role == UserRole.person)
+        .where(User.id != current_user.id)  # excluir a sí mismo
+        .where(User.is_active == True)
+    )
+
+    users = session.exec(query).all()
+
+    return [
+        {
+            "id": user.id,
+            "full_name": user.full_name,
+            "email": user.email,
+            "is_verified": user.is_verified,
+            "created_at": user.created_at,
+        }
+        for user in users
+    ]

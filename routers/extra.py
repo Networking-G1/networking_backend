@@ -5,7 +5,7 @@ from sqlmodel import Session
 from database import get_session
 from crud import create_skill, add_skill_to_user, get_user, get_user_skills, create_job_application, get_applications_for_user, send_message, get_conversation_messages, create_conversation, add_admin_monitor
 from models.extra import ActivityLog, JobApplication, JobApplicationStatus, Message
-from schemas.extra import SkillCreate, JobApplicationCreate, MessageCreate
+from schemas.extra import ActivityLogCreate, SkillCreate, JobApplicationCreate, MessageCreate
 from deps import get_current_user
 from sqlalchemy import desc
 router = APIRouter()
@@ -101,3 +101,16 @@ def user_report(user_id: int, session: Session = Depends(get_session), current_u
         "activities": [ {"type": act.type, "metadata": act.metadata, "created_at": act.created_at} for act in activities],
         "messages_sent": messages_count
     }
+
+
+@router.post("/activity", status_code=201)
+def log_activity(payload: ActivityLogCreate, session: Session = Depends(get_session)):
+    log = ActivityLog(
+        user_id=payload.user_id,
+        type=payload.type,
+        details=payload.details
+    )
+    session.add(log)
+    session.commit()
+    session.refresh(log)
+    return log
