@@ -5,6 +5,8 @@ from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from typing import Optional
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", "cambiame_por_default_seguro")
@@ -36,3 +38,26 @@ def decode_token(token: str):
         return payload
     except JWTError:
         return None
+
+# Ruta donde el frontend envía el token
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+def get_current_user_token(token: str = Depends(oauth2_scheme)):
+    """
+    Extrae el usuario actual desde el token JWT.
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Credenciales inválidas o token expirado",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    payload = decode_token(token)
+    if payload is None:
+        raise credentials_exception
+
+    user_id = payload.get("sub")
+    if user_id is None:
+        raise credentials_exception
+
+    return {"id": user_id}

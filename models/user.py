@@ -3,7 +3,7 @@ from sqlmodel import Relationship, SQLModel, Field
 from typing import List, Optional
 from datetime import datetime
 from enum import Enum
-
+from models.profile import AboutMe, WorkExperience, Education
 from models.extra import UserSkill
 
 class UserRole(str, Enum):
@@ -25,3 +25,8 @@ class User(UserBase, table=True):
     
     # Relaciones
     skills: List["UserSkill"] = Relationship(back_populates="user")
+
+    # NUEVAS relaciones para perfil profesional
+    about_me: Optional["AboutMe"] = Relationship(back_populates="user")
+    work_experiences: List["WorkExperience"] = Relationship(back_populates="user")
+    educations: List["Education"] = Relationship(back_populates="user")
