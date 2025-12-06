@@ -25,6 +25,7 @@ def create_db_and_tables():
     import models.user
     import models.groups
     import models.extra
+    import models.message
     SQLModel.metadata.create_all(engine)
 
 def get_session():
