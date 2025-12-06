@@ -1,6 +1,6 @@
 # routers/users.py
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session
+from sqlmodel import Session, select
 from typing import Any
 from database import get_session
 from schemas.schemas import UserCreate, UserRead
@@ -11,6 +11,7 @@ from datetime import timedelta
 from models.user import User
 
 router = APIRouter()
+
 
 @router.post("/register", response_model=UserRead, status_code=201)
 def register(user_in: UserCreate, session: Session = Depends(get_session)):
@@ -26,6 +27,7 @@ def register(user_in: UserCreate, session: Session = Depends(get_session)):
     )
     return user
 
+
 @router.post("/recover")
 def recover_account(payload: dict, session: Session = Depends(get_session)):
     email = payload.get("email")
@@ -34,19 +36,23 @@ def recover_account(payload: dict, session: Session = Depends(get_session)):
     user = get_user_by_email(session, email)
     if not user:
         return {"ok": True}  # No revelar si el email existe
-    token, expires_in = create_access_token(subject=user.id, expires_delta=timedelta(minutes=15))
+    token, expires_in = create_access_token(
+        subject=user.id, expires_delta=timedelta(minutes=15))
     # Aquí puedes enviar el token por correo
     return {"reset_token": token, "expires_in": expires_in}
+
 
 @router.post("/reset-password")
 def reset_password(payload: dict, session: Session = Depends(get_session)):
     token = payload.get("token")
     new_password = payload.get("new_password")
     if not token or not new_password:
-        raise HTTPException(status_code=400, detail="token y new_password requeridos")
+        raise HTTPException(
+            status_code=400, detail="token y new_password requeridos")
     payload_decoded = decode_token(token)
     if not payload_decoded:
-        raise HTTPException(status_code=400, detail="Token inválido o expirado")
+        raise HTTPException(
+            status_code=400, detail="Token inválido o expirado")
     sub = payload_decoded.get("sub")
     if not sub:
         raise HTTPException(status_code=400, detail="Token inválido")
@@ -56,9 +62,11 @@ def reset_password(payload: dict, session: Session = Depends(get_session)):
     set_password(session, user, new_password)
     return {"ok": True}
 
+
 @router.get("/me", response_model=UserRead)
-def read_me(current_user = Depends(get_current_user)):
+def read_me(current_user=Depends(get_current_user)):
     return current_user
+
 
 @router.get("/people")
 def list_people_users(
@@ -78,9 +86,6 @@ def list_people_users(
         {
             "id": user.id,
             "full_name": user.full_name,
-            "email": user.email,
-            "is_verified": user.is_verified,
-            "created_at": user.created_at,
         }
         for user in users
     ]

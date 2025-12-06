@@ -34,3 +34,10 @@ ngrok http 8000
   "full_name": "string",
   "role": "person"
 }
+
+{
+  "email": "admin@unmsm.edu.pe",
+  "password": "1234",
+  "full_name": "Administrador",
+  "role": "admin"
+}
