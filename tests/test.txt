@@ -1,1 +1,2 @@
 Carpeta para crear verificar el funcionamiento de las principales funcionalidades
+el test falta hacerlo
