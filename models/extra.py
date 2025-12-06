@@ -105,3 +105,17 @@ class Message(SQLModel, table=True):
     content: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
     read: bool = Field(default=False)
+
+class ConnectionStatus(str, Enum):
+    pending = "pending"
+    accepted = "accepted"
+    rejected = "rejected"
+
+class ConnectionRequest(SQLModel, table=True):
+    __tablename__ = "connectionrequest"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    sender_id: int = Field(foreign_key="users.id", index=True)
+    recipient_id: int = Field(foreign_key="users.id", index=True)
+    status: ConnectionStatus = Field(default=ConnectionStatus.pending)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)

@@ -6,6 +6,7 @@ from routers import users, auth_routes, messages
 import os
 from dotenv import load_dotenv
 from routers import extra
+from routers import connections
 
 load_dotenv()
 
