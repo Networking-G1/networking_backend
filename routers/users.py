@@ -67,7 +67,7 @@ def list_people_users(
 ):
     query = (
         select(User)
-        .where(User.role == UserRole.person)
+        .where(User.role == "person")
         .where(User.id != current_user.id)  # excluir a sí mismo
         .where(User.is_active == True)
     )

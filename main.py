@@ -5,7 +5,6 @@ from database import create_db_and_tables
 from routers import users, auth_routes
 import os
 from dotenv import load_dotenv
-from routers import extra
 
 load_dotenv()
 
@@ -28,7 +27,6 @@ create_db_and_tables()
 # Include routers
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(auth_routes.router, prefix="/auth", tags=["Authentication"])
-app.include_router(extra.router, prefix="/extra", tags=["Extra"])
 
 @app.get("/")
 def root():

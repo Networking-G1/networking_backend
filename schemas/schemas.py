@@ -1,21 +1,19 @@
 # schemas.py
 from pydantic import BaseModel, EmailStr
 from typing import Optional
-from models.user import UserRole
 
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
     full_name: Optional[str] = None
-    role: Optional[UserRole] = UserRole.person
+    role: Optional[str] = "person"
 
 class UserRead(BaseModel):
     id: int
     email: EmailStr
     full_name: Optional[str]
     is_active: bool
-    is_verified: bool
-    role: UserRole
+    role: str
 
     class Config:
         orm_mode = True
