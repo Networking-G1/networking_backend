@@ -125,3 +125,11 @@ class ActivityLogRead(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+# -----------------------------
+#  CONNECTION REQUESTS
+# -----------------------------
+
+class ConnectionRequestCreate(BaseModel):
+    recipient_id: int

@@ -3,7 +3,7 @@ from sqlmodel import Session, select
 from models.user import User
 from auth import hash_password, verify_password
 from typing import Optional, List
-from models.extra import Skill, UserSkill, Hobby, UserHobby, Preference, ActivityLog, JobApplication, AdminMonitor, Conversation, Message
+from models.extra import Skill, UserSkill, Hobby, UserHobby, Preference, ActivityLog, JobApplication, AdminMonitor, Conversation, Message, ConnectionRequest
 from datetime import datetime
 
 def get_user_by_email(session: Session, email: str) -> Optional[User]:
@@ -115,3 +115,27 @@ def add_admin_monitor(session: Session, admin_id: int, person_id: int):
     session.commit()
     session.refresh(entry)
     return entry
+
+# CONNECTIONS
+def create_connection_request(session: Session, sender_id: int, recipient_id: int) -> ConnectionRequest:
+    request = ConnectionRequest(sender_id=sender_id, recipient_id=recipient_id)
+    session.add(request)
+    session.commit()
+    session.refresh(request)
+    return request
+
+def get_pending_requests_for_user(session: Session, user_id: int):
+    stmt = select(ConnectionRequest).where(
+        (ConnectionRequest.recipient_id == user_id) & (ConnectionRequest.status == "pending")
+    )
+    return session.exec(stmt).all()
+
+def update_connection_request_status(session: Session, request_id: int, status: str):
+    request = session.get(ConnectionRequest, request_id)
+    if request:
+        request.status = status
+        request.updated_at = datetime.utcnow()
+        session.add(request)
+        session.commit()
+        session.refresh(request)
+    return request
