@@ -22,8 +22,10 @@ if DATABASE_URL.startswith("postgres://"):
 engine = create_engine(DATABASE_URL, echo=True)
 
 def create_db_and_tables():
-    # Las tablas ya existen en Supabase, no crear
-    pass
+    import models.user
+    import models.groups
+    import models.extra
+    SQLModel.metadata.create_all(engine)
 
 def get_session():
     with Session(engine) as session:

@@ -15,5 +15,5 @@ class User(UserBase, table=True):
     hashed_password: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
     
-    # Relaciones (si se usan)
-    # skills: List["UserSkill"] = Relationship(back_populates="user")
+    # Relaciones
+    skills: List["UserSkill"] = Relationship(back_populates="user")
