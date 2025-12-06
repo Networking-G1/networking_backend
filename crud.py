@@ -5,6 +5,7 @@ from auth import hash_password, verify_password
 from typing import Optional, List
 from models.extra import Skill, UserSkill, Hobby, UserHobby, Preference, ActivityLog, JobApplication, AdminMonitor, Conversation, Message, ConnectionRequest
 from datetime import datetime
+from models.profile import AboutMe, WorkExperience, Education
 
 def get_user_by_email(session: Session, email: str) -> Optional[User]:
     statement = select(User).where(User.email == email)
@@ -139,3 +140,72 @@ def update_connection_request_status(session: Session, request_id: int, status: 
         session.commit()
         session.refresh(request)
     return request
+# --- ACERCA DE MÍ ---
+def get_about_me(session: Session, user_id: int) -> Optional[AboutMe]:
+    statement = select(AboutMe).where(AboutMe.user_id == user_id)
+    return session.exec(statement).first()
+
+def create_or_update_about_me(session: Session, user_id: int, **kwargs) -> AboutMe:
+    about_me = get_about_me(session, user_id)
+    
+    if about_me:
+        # Actualizar campos
+        for key, value in kwargs.items():
+            if value is not None and hasattr(about_me, key):
+                setattr(about_me, key, value)
+        about_me.updated_at = datetime.utcnow()
+    else:
+        # Crear nuevo
+        about_me = AboutMe(user_id=user_id, **kwargs)
+        session.add(about_me)
+    
+    session.commit()
+    session.refresh(about_me)
+    return about_me
+
+# --- EXPERIENCIA LABORAL ---
+def create_work_experience(session: Session, user_id: int, **kwargs) -> WorkExperience:
+    experience = WorkExperience(user_id=user_id, **kwargs)
+    session.add(experience)
+    session.commit()
+    session.refresh(experience)
+    return experience
+
+def get_user_work_experiences(session: Session, user_id: int) -> List[WorkExperience]:
+    statement = select(WorkExperience).where(WorkExperience.user_id == user_id)
+    return session.exec(statement).all()
+
+def update_work_experience(session: Session, experience_id: int, **kwargs) -> Optional[WorkExperience]:
+    experience = session.get(WorkExperience, experience_id)
+    if not experience:
+        return None
+    
+    for key, value in kwargs.items():
+        if value is not None and hasattr(experience, key):
+            setattr(experience, key, value)
+    
+    experience.updated_at = datetime.utcnow()
+    session.add(experience)
+    session.commit()
+    session.refresh(experience)
+    return experience
+
+def delete_work_experience(session: Session, experience_id: int) -> bool:
+    experience = session.get(WorkExperience, experience_id)
+    if experience:
+        session.delete(experience)
+        session.commit()
+        return True
+    return False
+
+# --- EDUCACIÓN ---
+def create_education(session: Session, user_id: int, **kwargs) -> Education:
+    education = Education(user_id=user_id, **kwargs)
+    session.add(education)
+    session.commit()
+    session.refresh(education)
+    return education
+
+def get_user_educations(session: Session, user_id: int) -> List[Education]:
+    statement = select(Education).where(Education.user_id == user_id)
+    return session.exec(statement).all()
